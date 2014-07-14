@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     if(qEnvironmentVariableIsSet("PORT") && !qEnvironmentVariableIsEmpty("PORT")) {
         port = qgetenv("PORT").toInt();
     }
-    EchoServer *server = new EchoServer(1234);
+    EchoServer *server = new EchoServer(port);
 
     QObject::connect(server, &EchoServer::closed, &a, &QCoreApplication::quit);
 
