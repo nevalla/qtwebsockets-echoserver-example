@@ -14,4 +14,5 @@ SOURCES += \
 HEADERS += \
     echoserver.h
 
-OTHER_FILES += echoclient.html
+OTHER_FILES += echoclient.html \
+    Procfile
