@@ -54,6 +54,7 @@ EchoServer::EchoServer(quint16 port, QObject *parent) :
 {
     if (m_pWebSocketServer->listen(QHostAddress::Any, port)) {
         qDebug() << "Echoserver listening on port" << port;
+
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection,
                 this, &EchoServer::onNewConnection);
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &EchoServer::closed);
@@ -66,7 +67,6 @@ EchoServer::~EchoServer()
     m_pWebSocketServer->close();
     qDeleteAll(m_clients.begin(), m_clients.end());
 }
-
 //! [onNewConnection]
 void EchoServer::onNewConnection()
 {

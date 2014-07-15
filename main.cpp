@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
         port = qgetenv("PORT").toInt();
     }
     EchoServer *server = new EchoServer(port);
-
     QObject::connect(server, &EchoServer::closed, &a, &QCoreApplication::quit);
 
     return a.exec();
