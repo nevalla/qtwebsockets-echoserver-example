@@ -61,7 +61,7 @@ EchoServer::EchoServer(quint16 port, QObject *parent) :
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &EchoServer::closed);
 
         QTimer *timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(pingClients()));
+        connect(timer, &QTimer::timeout, this, &EchoServer::pingClients);
         timer->start(50000);
     }
 }
