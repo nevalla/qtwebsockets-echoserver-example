@@ -62,6 +62,8 @@ private Q_SLOTS:
     void processTextMessage(QString message);
     void processBinaryMessage(QByteArray message);
     void socketDisconnected();
+    void pingClients();
+    void onPong(quint64 elapsedTime, const QByteArray & payload);
 
 private:
     QWebSocketServer *m_pWebSocketServer;

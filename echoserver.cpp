@@ -42,6 +42,7 @@
 #include "QtWebSockets/qwebsocketserver.h"
 #include "QtWebSockets/qwebsocket.h"
 #include <QtCore/QDebug>
+#include "QTimer"
 
 QT_USE_NAMESPACE
 
@@ -58,6 +59,10 @@ EchoServer::EchoServer(quint16 port, QObject *parent) :
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection,
                 this, &EchoServer::onNewConnection);
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &EchoServer::closed);
+
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), this, SLOT(pingClients()));
+        timer->start(10000);
     }
 }
 //! [constructor]
@@ -75,19 +80,48 @@ void EchoServer::onNewConnection()
     connect(pSocket, &QWebSocket::textMessageReceived, this, &EchoServer::processTextMessage);
     connect(pSocket, &QWebSocket::binaryMessageReceived, this, &EchoServer::processBinaryMessage);
     connect(pSocket, &QWebSocket::disconnected, this, &EchoServer::socketDisconnected);
+    connect(pSocket, &QWebSocket::pong, this, &EchoServer::onPong);
 
     m_clients << pSocket;
 }
 //! [onNewConnection]
+
+//! [pingClients]
+void EchoServer::pingClients()
+{
+    if(m_clients.length() > 0) {
+        qDebug() << "Ping clients " << m_clients.length();
+        for(int i = 0; i< m_clients.length(); i++) {
+            m_clients[i]->ping();
+        }
+    }
+
+}
+//! [pingClients]
+
+void EchoServer::onPong(quint64 elapsedTime, const QByteArray & payload)
+{
+
+    qDebug() << "Echoserver got new pong" << elapsedTime;
+    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+    if (pClient) {
+        // register pong event
+    }
+
+}
+
 
 //! [processTextMessage]
 void EchoServer::processTextMessage(QString message)
 {
     qDebug() << "Echoserver got new message" << message;
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (pClient) {
-        pClient->sendTextMessage(message);
+    for(int i = 0; i< m_clients.length(); i++) {
+        m_clients[i]->sendTextMessage(message);;
     }
+    /*if (pClient) {
+        pClient->sendTextMessage(message);
+    }*/
     //m_pWebSocketServer->close();
 }
 //! [processTextMessage]
