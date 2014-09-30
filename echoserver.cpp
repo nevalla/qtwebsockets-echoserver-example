@@ -62,7 +62,7 @@ EchoServer::EchoServer(quint16 port, QObject *parent) :
 
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(pingClients()));
-        timer->start(10000);
+        timer->start(50000);
     }
 }
 //! [constructor]
@@ -99,15 +99,9 @@ void EchoServer::pingClients()
 }
 //! [pingClients]
 
-void EchoServer::onPong(quint64 elapsedTime, const QByteArray & payload)
+void EchoServer::onPong()
 {
-
-    qDebug() << "Echoserver got new pong" << elapsedTime;
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (pClient) {
-        // register pong event
-    }
-
+    qDebug() << "Echoserver got new pong";
 }
 
 
@@ -115,11 +109,13 @@ void EchoServer::onPong(quint64 elapsedTime, const QByteArray & payload)
 void EchoServer::processTextMessage(QString message)
 {
     qDebug() << "Echoserver got new message" << message;
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+
     for(int i = 0; i< m_clients.length(); i++) {
         m_clients[i]->sendTextMessage(message);;
     }
-    /*if (pClient) {
+    /*
+    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+    if (pClient) {
         pClient->sendTextMessage(message);
     }*/
     //m_pWebSocketServer->close();
